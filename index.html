@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MathVerse THCS - Nền Tảng Học Toán Trung Học Cơ Sở</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        },
+                        math: {
+                            purple: '#8b5cf6',
+                            emerald: '#10b981',
+                            rose: '#f43f5e',
+                            amber: '#f59e0b',
+                            cyan: '#06b6d4'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- KaTeX for math rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .dark .glass {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .dark .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 9999px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #334155;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .glow-effect {
+            box-shadow: 0 0 25px -5px rgba(59, 130, 246, 0.4);
+        }
+
+        .dark .glow-effect {
+            box-shadow: 0 0 25px -5px rgba(139, 92, 246, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-300 flex flex-col antialiased selection:bg-brand-500 selection:text-white">
+
+    <!-- Header/Navbar -->
+    <header class="sticky top-0 z-50 glass border-b border-slate-200/80 dark:border-slate-800/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <!-- Logo -->
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 via-math-purple to-math-rose flex items-center justify-center text-white font-extrabold text-xl shadow-lg glow-effect">
+                    <i class="fas fa-calculator"></i>
+                </div>
+                <div>
+                    <span class="text-xl font-extrabold tracking-tight gradient-text">MathVerse THCS</span>
+                    <span class="hidden sm:inline-block text-xs px-2 py-0.5 ml-2 rounded-full bg-brand-100 text-brand-700 dark:bg-brand-900/60 dark:text-brand-300 font-semibold">Cấp 2</span>
+                </div>
+            </div>
+
+            <!-- Global Controls -->
+            <div class="flex items-center space-x-3">
+                <button id="themeToggle" class="p-2.5 rounded-xl bg-slate-200/60 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700 transition-all duration-200" title="Chuyển chế độ sáng/tối">
+                    <i id="themeIcon" class="fas fa-moon text-lg"></i>
+                </button>
+
+                <button id="mobileMenuBtn" class="md:hidden p-2.5 rounded-xl bg-slate-200/60 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 flex flex-col md:flex-row gap-6 w-full">
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="w-full md:w-64 flex-shrink-0 hidden md:block space-y-2">
+            <div class="glass-card rounded-2xl p-3 sticky top-22">
+                <div class="px-3 py-2 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                    Chức Năng Chính
+                </div>
+                <nav class="space-y-1">
+                    <button onclick="switchTab('formulas')" id="nav-formulas" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all duration-200 bg-brand-600 text-white shadow-md shadow-brand-500/20">
+                        <i class="fas fa-book-bookmark w-5"></i>
+                        <span>Công Thức Cấp 2</span>
+                    </button>
+
+                    <button onclick="switchTab('calculator')" id="nav-calculator" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-all duration-200">
+                        <i class="fas fa-calculator w-5"></i>
+                        <span>Máy Tính & Giải Toán</span>
+                    </button>
+
+                    <button onclick="switchTab('lab')" id="nav-lab" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-all duration-200">
+                        <i class="fas fa-shapes w-5"></i>
+                        <span>Thí Nghiệm Hình Học</span>
+                    </button>
+
+                    <button onclick="switchTab('quiz')" id="nav-quiz" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-all duration-200">
+                        <i class="fas fa-brain w-5"></i>
+                        <span>Luyện Tập & Quiz</span>
+                    </button>
+                </nav>
+
+                <!-- User Stats Mini Card -->
+                <div class="mt-6 p-4 rounded-xl bg-gradient-to-br from-brand-500/10 via-math-purple/10 to-transparent border border-brand-500/20">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-semibold text-brand-600 dark:text-brand-400">Tiến độ hôm nay</span>
+                        <i class="fas fa-fire text-amber-500 animate-pulse"></i>
+                    </div>
+                    <div class="flex items-baseline space-x-1">
+                        <span id="userStreak" class="text-2xl font-black text-slate-800 dark:text-white">3</span>
+                        <span class="text-xs text-slate-500">ngày liên tiếp</span>
+                    </div>
+                    <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full mt-3 overflow-hidden">
+                        <div id="progressBar" class="bg-gradient-to-r from-brand-500 to-math-purple h-full w-2/3 transition-all duration-500"></div>
+                    </div>
+                    <div class="mt-2 text-[11px] text-slate-500 dark:text-slate-400 flex justify-between">
+                        <span>XP: <strong id="userXP" class="text-slate-700 dark:text-slate-200">350</strong></span>
+                        <span>Huy hiệu: <strong class="text-slate-700 dark:text-slate-200">4/12</strong></span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 space-y-6 overflow-x-hidden">
+            
+            <!-- SECTION 1: Formula Hub -->
+            <section id="tab-formulas" class="tab-content block space-y-6 animate-fadeIn">
+                <div class="glass-card rounded-2xl p-6 shadow-sm">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                        <div>
+                            <h1 class="text-2xl font-extrabold tracking-tight">Tra Cứu Công Thức Toán THCS</h1>
+                            <p class="text-sm text-slate-500 dark:text-slate-400">Tóm tắt kiến thức Toán Lớp 6, 7, 8, 9 dễ hiểu</p>
+                        </div>
+                        <div class="relative w-full md:w-72">
+                            <i class="fas fa-search absolute left-3.5 top-3.5 text-slate-400"></i>
+                            <input type="text" id="formulaSearch" onkeyup="filterFormulas()" placeholder="Tìm công thức..." class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 border-0 text-sm focus:ring-2 focus:ring-brand-500 outline-none transition-all">
+                        </div>
+                    </div>
+
+                    <!-- Category Pills -->
+                    <div class="flex flex-wrap gap-2" id="categoryPills">
+                        <button onclick="filterCategory('all')" class="cat-pill px-4 py-2 rounded-xl text-xs font-semibold bg-brand-600 text-white shadow-sm transition-all">Tất cả</button>
+                        <button onclick="filterCategory('sohoc')" class="cat-pill px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">Số Học & Đại Số</button>
+                        <button onclick="filterCategory('hangdangthuc')" class="cat-pill px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">Hằng Đẳng Thức</button>
+                        <button onclick="filterCategory('hinhhoc')" class="cat-pill px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">Hình Học Phẳng</button>
+                        <button onclick="filterCategory('hinhkhoi')" class="cat-pill px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">Hình Không Gian</button>
+                    </div>
+                </div>
+
+                <!-- Formulas Grid -->
+                <div id="formulasGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                </div>
+            </section>
+
+            <!-- SECTION 2: Calculator & Solvers -->
+            <section id="tab-calculator" class="tab-content hidden space-y-6">
+                <div class="glass-card rounded-2xl p-6">
+                    <h1 class="text-2xl font-extrabold tracking-tight mb-2">Máy Tính & Công Cụ Giải Toán THCS</h1>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Hỗ trợ tính toán nhanh, giải phương trình và tính diện tích/thể tích</p>
+
+                    <!-- Solver Selector Sub-tabs -->
+                    <div class="flex border-b border-slate-200 dark:border-slate-800 mb-6 overflow-x-auto">
+                        <button onclick="switchSolver('eq')" id="subtab-eq" class="solver-tab-btn py-2.5 px-4 font-semibold text-sm border-b-2 border-brand-600 text-brand-600 dark:text-brand-400 whitespace-nowrap">Giải Phương Trình</button>
+                        <button onclick="switchSolver('geo2d')" id="subtab-geo2d" class="solver-tab-btn py-2.5 px-4 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 whitespace-nowrap">Chu Vi & Diện Tích</button>
+                        <button onclick="switchSolver('geo3d')" id="subtab-geo3d" class="solver-tab-btn py-2.5 px-4 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 whitespace-nowrap">Thể Tích Hình Khối</button>
+                        <button onclick="switchSolver('graph')" id="subtab-graph" class="solver-tab-btn py-2.5 px-4 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 whitespace-nowrap">Vẽ Đồ Thị Hàm Số</button>
+                    </div>
+
+                    <!-- EQUATION SOLVER -->
+                    <div id="solver-eq" class="solver-view space-y-4">
+                        <div class="bg-slate-50 dark:bg-slate-900/50 p-5 rounded-xl border border-slate-200 dark:border-slate-800">
+                            <h3 class="font-bold text-base mb-2">1. Phương Trình Bậc 1: <span class="text-brand-600 dark:text-brand-400">ax + b = 0</span></h3>
+                            <div class="grid grid-cols-2 gap-3 my-4">
+                                <div>
+                                    <label class="text-xs font-medium text-slate-500">Hệ số a</label>
+                                    <input type="number" id="eq1A" value="2" class="w-full mt-1 p-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-semibold outline-none">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-medium text-slate-500">Hệ số b</label>
+                                    <input type="number" id="eq1B" value="-6" class="w-full mt-1 p-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-semibold outline-none">
+                                </div>
+                            </div>
+                            <button onclick="solveLinear()" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm transition-all shadow-md shadow-brand-500/20">Giải Phương Trình Bậc 1</button>
+                            <div id="eq1Result" class="mt-4 p-4 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hidden"></div>
+                        </div>
+
+                        <div class="bg-slate-50 dark:bg-slate-900/50 p-5 rounded-xl border border-slate-200 dark:border-slate-800">
+                            <h3 class="font-bold text-base mb-2">2. Phương Trình Bậc 2: <span class="text-brand-600 dark:text-brand-400">ax² + bx + c = 0</span></h3>
+                            <div class="grid grid-cols-3 gap-3 my-4">
+                                <div>
+                                    <label class="text-xs font-medium text-slate-500">Hệ số a</label>
+                                    <input type="number" id="coeffA" value="1" class="w-full mt-1 p-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-semibold focus:ring-2 focus:ring-brand-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-medium text-slate-500">Hệ số b</label>
+                                    <input type="number" id="coeffB" value="-5" class="w-full mt-1 p-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-semibold focus:ring-2 focus:ring-brand-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-medium text-slate-500">Hệ số c</label>
+                                    <input type="number" id="coeffC" value="6" class="w-full mt-1 p-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-semibold focus:ring-2 focus:ring-brand-500 outline-none">
+                                </div>
+                            </div>
+                            <button onclick="solveQuadratic()" class="w-full py-2.5 rounded-xl bg-math-purple hover:bg-purple-700 text-white font-semibold text-sm transition-all shadow-md shadow-purple-500/20">Giải Phương Trình Bậc 2</button>
+                            <div id="quadResult" class="mt-4 p-4 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hidden"></div>
+                        </div>
+                    </div>
+
+                    <!-- GEOMETRY 2D SOLVER -->
+                    <div id="solver-geo2d" class="solver-view hidden space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Hình chữ nhật -->
+                            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
+                                <h4 class="font-bold text-sm mb-2 text-brand-500"><i class="fas fa-vector-square mr-1.5"></i>Hình Chữ Nhật</h4>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label class="text-xs text-slate-500">Chiều dài (a)</label>
+                                        <input type="number" id="rectA" value="6" class="w-full mt-1 p-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs text-slate-500">Chiều rộng (b)</label>
+                                        <input type="number" id="rectB" value="4" class="w-full mt-1 p-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm outline-none">
+                                    </div>
+                                </div>
+                                <button onclick="calcRect()" class="mt-3 w-full py-2 rounded-lg bg-brand-600 text-white font-semibold text-xs">Tính C & S</button>
+                                <div id="rectRes" class="mt-3 text-xs space-y-1 font-mono"></div>
+                            </div>
+
+                            <!-- Hình tròn -->
+                            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
+                                <h4 class="font-bold text-sm mb-2 text-math-rose"><i class="fas fa-circle mr-1.5"></i>Hình Tròn</h4>
+                                <label class="text-xs text-slate-500">Bán kính (r)</label>
+                                <input type="number" id="circleR" value="5" class="w-full mt-1 p-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm outline-none">
+                                <button onclick="calcCircle()" class="mt-3 w-full py-2 rounded-lg bg-math-rose text-white font-semibold text-xs">Tính Chu Vi & Diện Tích</button>
+                                <div id="circleRes" class="mt-3 text-xs space-y-1 font-mono"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GEOMETRY 3D SOLVER -->
+                    <div id="solver-geo3d" class="solver-view hidden space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Hình hộp chữ nhật -->
+                            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
+                                <h4 class="font-bold text-sm mb-2 text-math-emerald"><i class="fas fa-cube mr-1.5"></i>Hình Hộp Chữ Nhật</h4>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <div>
+                                        <label class="text-xs text-slate-500">Dài (a)</label>
+                                        <input type="number" id="boxA" value="3" class="w-full mt-1 p-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs text-slate-500">Rộng (b)</label>
+                                        <input type="number" id="boxB" value="4" class="w-full mt-1 p-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs text-slate-500">Cao (h)</label>
+                                        <input type="number" id="boxH" value="5" class="w-full mt-1 p-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm outline-none">
+                                    </div>
+                                </div>
+                                <button onclick="calcBox()" class="mt-3 w-full py-2 rounded-lg bg-math-emerald text-white font-semibold text-xs">Tính Diện Tích & Thể Tích</button>
+                                <div id="boxRes" class="mt-3 text-xs space-y-1 font-mono"></div>
+                            </div>
+
+                            <!-- Hình trụ -->
+                            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
+                                <h4 class="font-bold text-sm mb-2 text-math-cyan"><i class="fas fa-database mr-1.5"></i>Hình Trụ</h4>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label class="text-xs text-slate-500">Bán kính r</label>
+                                        <input type="number" id="cylR" value="3" class="w-full mt-1 p-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs text-slate-500">Chiều cao h</label>
+                                        <input type="number" id="cylH" value="8" class="w-full mt-1 p-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm outline-none">
+                                    </div>
+                                </div>
+                                <button onclick="calcCylinder()" class="mt-3 w-full py-2 rounded-lg bg-math-cyan text-white font-semibold text-xs">Tính S & V</button>
+                                <div id="cylRes" class="mt-3 text-xs space-y-1 font-mono"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GRAPH PLOTTER -->
+                    <div id="solver-graph" class="solver-view hidden space-y-4">
+                        <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
+                            <div class="flex flex-col sm:flex-row items-center gap-3 mb-4">
+                                <span class="font-bold text-sm">Chọn Đồ Thị Hàm Số: </span>
+                                <select id="graphPreset" onchange="drawGraph()" class="px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-medium outline-none">
+                                    <option value="line1">y = x + 1 (Đường thẳng)</option>
+                                    <option value="line2">y = -2x + 3 (Đường thẳng)</option>
+                                    <option value="quad1">y = x² (Parabol mở lên)</option>
+                                    <option value="quad2">y = -x² + 4 (Parabol mở xuống)</option>
+                                </select>
+                            </div>
+                            <div class="relative w-full aspect-video bg-white dark:bg-slate-900 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-inner">
+                                <canvas id="graphCanvas" class="w-full h-full"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: Visual Geometry Lab -->
+            <section id="tab-lab" class="tab-content hidden space-y-6">
+                <div class="glass-card rounded-2xl p-6">
+                    <h1 class="text-2xl font-extrabold tracking-tight mb-2">Thí Nghiệm Hình Học Trực Quan</h1>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Mô phỏng Định lý Pitago trong Tam Giác Vuông</p>
+
+                    <!-- Pythagoras Interactive Lab -->
+                    <div class="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
+                        <div class="flex flex-col lg:flex-row gap-6 items-center">
+                            <div class="w-full lg:w-1/2 flex flex-col items-center">
+                                <div class="relative w-72 h-72 sm:w-80 sm:h-80 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-2 shadow-md">
+                                    <canvas id="pythagorasCanvas" width="300" height="300" class="w-full h-full"></canvas>
+                                </div>
+                                <span class="text-xs text-slate-400 mt-2"><i class="fas fa-sliders-h mr-1"></i>Điều chỉnh độ dài 2 cạnh góc vuông bên dưới</span>
+                            </div>
+
+                            <div class="w-full lg:w-1/2 space-y-4">
+                                <h3 class="text-lg font-bold text-slate-800 dark:text-white flex items-center">
+                                    <i class="fas fa-ruler-combined text-brand-500 mr-2"></i> Định Lý Pitago: \(a^2 + b^2 = c^2\)
+                                </h3>
+
+                                <div>
+                                    <div class="flex justify-between text-xs font-semibold mb-1">
+                                        <span>Cạnh góc vuông a:</span>
+                                        <span id="sideAVal" class="text-brand-600 dark:text-brand-400">3 cm</span>
+                                    </div>
+                                    <input type="range" id="sliderA" min="1" max="8" value="3" step="0.5" oninput="updatePythagorasLab()" class="w-full accent-brand-600">
+                                </div>
+
+                                <div>
+                                    <div class="flex justify-between text-xs font-semibold mb-1">
+                                        <span>Cạnh góc vuông b:</span>
+                                        <span id="sideBVal" class="text-math-rose">4 cm</span>
+                                    </div>
+                                    <input type="range" id="sliderB" min="1" max="8" value="4" step="0.5" oninput="updatePythagorasLab()" class="w-full accent-math-rose">
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-3 text-sm font-mono">
+                                    <div class="p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                        <div class="text-xs text-slate-400 font-sans">Bình phương \(a^2 + b^2\)</div>
+                                        <div id="pythSum" class="font-bold text-slate-700 dark:text-slate-200">25</div>
+                                    </div>
+                                    <div class="p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                        <div class="text-xs text-math-emerald font-sans">Cạnh huyền c = \(\sqrt{a^2+b^2}\)</div>
+                                        <div id="pythC" class="font-bold text-math-emerald">5.00 cm</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: Quiz & Practice -->
+            <section id="tab-quiz" class="tab-content hidden space-y-6">
+                <div class="glass-card rounded-2xl p-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                        <div>
+                            <h1 class="text-2xl font-extrabold tracking-tight">Thử Thách Toán THCS</h1>
+                            <p class="text-sm text-slate-500 dark:text-slate-400">Ôn tập kiến thức Toán Lớp 6 - 9 qua câu hỏi trắc nghiệm</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-xs font-semibold px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 border border-amber-500/20">
+                                <i class="fas fa-trophy mr-1"></i>Cấp độ: THCS
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Quiz Area Card -->
+                    <div id="quizContainer" class="p-6 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 relative">
+                        <div class="flex justify-between items-center mb-4">
+                            <span id="quizBadge" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-brand-100 dark:bg-brand-900/50 text-brand-600 dark:text-brand-300">Cơ bản</span>
+                            <span id="quizProgress" class="text-xs font-semibold text-slate-400">Câu 1/3</span>
+                        </div>
+
+                        <!-- Question text -->
+                        <div id="quizQuestion" class="text-lg font-bold mb-6 text-slate-800 dark:text-slate-100 min-h-[50px]">
+                        </div>
+
+                        <!-- Option buttons -->
+                        <div id="quizOptions" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+                        </div>
+
+                        <!-- Feedback Box -->
+                        <div id="quizFeedback" class="hidden p-4 rounded-xl mb-4 text-sm font-medium"></div>
+
+                        <!-- Control Footer -->
+                        <div class="flex justify-end">
+                            <button id="nextQuizBtn" onclick="nextQuestion()" class="px-6 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm transition-all shadow-md hidden">
+                                Câu Tiếp Theo <i class="fas fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        /* State Store */
+        const AppState = {
+            theme: 'dark',
+            currentTab: 'formulas',
+            xp: 350,
+            streak: 3,
+            quizIndex: 0,
+            quizScore: 0
+        };
+
+        // Danh sách công thức Toán Cấp 2
+        const formulasData = [
+            { id: 1, category: 'hangdangthuc', title: 'Bình phương của một tổng', latex: '(a + b)^2 = a^2 + 2ab + b^2', desc: 'Hằng đẳng thức đáng nhớ số 1 (Lớp 8).' },
+            { id: 2, category: 'hangdangthuc', title: 'Bình phương của một hiệu', latex: '(a - b)^2 = a^2 - 2ab + b^2', desc: 'Hằng đẳng thức đáng nhớ số 2 (Lớp 8).' },
+            { id: 3, category: 'hangdangthuc', title: 'Hiệu hai bình phương', latex: 'a^2 - b^2 = (a - b)(a + b)', desc: 'Hằng đẳng thức đáng nhớ số 3 (Lớp 8).' },
+            { id: 4, category: 'sohoc', title: 'Công thức Phân số cơ bản', latex: '\\frac{a}{m} + \\frac{b}{m} = \\frac{a + b}{m}', desc: 'Cộng hai phân số cùng mẫu số (Lớp 6).' },
+            { id: 5, category: 'sohoc', title: 'Công thức nghiệm PT Bậc 2', latex: 'x = \\frac{-b \\pm \\sqrt{\\Delta}}{2a}', desc: 'Với $\\Delta = b^2 - 4ac \\ge 0$ (Lớp 9).' },
+            { id: 6, category: 'hinhhoc', title: 'Định lý Pitago trong tam giác vuông', latex: 'a^2 + b^2 = c^2', desc: 'Tính cạnh huyền c khi biết 2 cạnh góc vuông a, b (Lớp 7).' },
+            { id: 7, category: 'hinhhoc', title: 'Diện tích Tam giác', latex: 'S = \\frac{1}{2} \\cdot a \\cdot h', desc: 'S bằng 1/2 đáy nhân chiều cao tương ứng.' },
+            { id: 8, category: 'hinhhoc', title: 'Chu vi & Diện tích Hình tròn', latex: 'C = 2\\pi R, \\quad S = \\pi R^2', desc: 'R là bán kính hình tròn (Lớp 5 - Lớp 9).' },
+            { id: 9, category: 'hinhkhoi', title: 'Thể tích Hình hộp chữ nhật', latex: 'V = a \\cdot b \\cdot h', desc: 'Thích hợp cho khối chữ nhật chiều dài a, rộng b, cao h.' },
+            { id: 10, category: 'hinhkhoi', title: 'Thể tích Hình trụ', latex: 'V = \\pi R^2 h', desc: 'Thích hợp cho khối trụ có bán kính đáy R, chiều cao h.' }
+        ];
+
+        // Câu hỏi trắc nghiệm Toán Cấp 2
+        const quizData = [
+            {
+                question: 'Kết quả của hằng đẳng thức $(x + 3)^2$ là gì?',
+                options: ['x^2 + 9', 'x^2 + 6x + 9', 'x^2 + 3x + 9', 'x^2 + 6x + 6'],
+                answer: 1,
+                explanation: 'Theo hằng đẳng thức $(a+b)^2 = a^2 + 2ab + b^2 \\Rightarrow (x+3)^2 = x^2 + 2\\cdot x\\cdot 3 + 3^2 = x^2 + 6x + 9$.',
+                level: 'Lớp 8'
+            },
+            {
+                question: 'Tam giác vuông có hai cạnh góc vuông là 3cm và 4cm. Độ dài cạnh huyền là bao nhiêu?',
+                options: ['5 cm', '7 cm', '6 cm', '25 cm'],
+                answer: 0,
+                explanation: 'Áp dụng định lý Pitago: $c^2 = a^2 + b^2 = 3^2 + 4^2 = 9 + 16 = 25 \\Rightarrow c = 5\\text{ cm}$.',
+                level: 'Lớp 7'
+            },
+            {
+                question: 'Diện tích hình tròn có bán kính $R = 3\\text{ cm}$ xấp xỉ bằng bao nhiêu? (Lấy $\\pi \\approx 3.14$)',
+                options: ['18.84 cm²', '28.26 cm²', '9.42 cm²', '12.56 cm²'],
+                answer: 1,
+                explanation: 'Diện tích $S = \\pi R^2 = 3.14 \\times 3^2 = 3.14 \\times 9 = 28.26\\text{ cm}^2$.',
+                level: 'Lớp 9'
+            }
+        ];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            renderFormulas(formulasData);
+            updatePythagorasLab();
+            drawGraph();
+            loadQuizQuestion();
+
+            document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+                const sidebar = document.getElementById('sidebar');
+                sidebar.classList.toggle('hidden');
+            });
+        });
+
+        function initTheme() {
+            const toggleBtn = document.getElementById('themeToggle');
+            const icon = document.getElementById('themeIcon');
+            
+            toggleBtn.addEventListener('click', () => {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    icon.className = 'fas fa-sun text-lg text-amber-500';
+                } else {
+                    document.documentElement.classList.add('dark');
+                    icon.className = 'fas fa-moon text-lg';
+                }
+                drawGraph();
+                updatePythagorasLab();
+            });
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.className = 'nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-all duration-200';
+            });
+
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            activeBtn.className = 'nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all duration-200 bg-brand-600 text-white shadow-md shadow-brand-500/20';
+            
+            if(tabId === 'lab') updatePythagorasLab();
+            if(tabId === 'calculator') drawGraph();
+        }
+
+        function renderFormulas(items) {
+            const grid = document.getElementById('formulasGrid');
+            grid.innerHTML = items.map(item => `
+                <div class="glass-card rounded-2xl p-5 hover:border-brand-500/50 transition-all duration-300 group">
+                    <div class="flex justify-between items-start mb-3">
+                        <span class="text-xs font-bold px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 uppercase tracking-wider">${item.category}</span>
+                        <button onclick="copyToClipboard('${item.latex.replace(/\\/g, '\\\\')}')" class="text-slate-400 hover:text-brand-500 transition-colors" title="Sao chép Công thức">
+                            <i class="far fa-copy"></i>
+                        </button>
+                    </div>
+                    <h3 class="font-bold text-slate-800 dark:text-slate-100 mb-2">${item.title}</h3>
+                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/80 text-center my-3 overflow-x-auto font-mono text-brand-600 dark:text-brand-400">
+                        $$\\displaystyle ${item.latex}$$
+                    </div>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">${item.desc}</p>
+                </div>
+            `).join('');
+
+            if (window.renderMathInElement) {
+                renderMathInElement(grid, {
+                    delimiters: [
+                        {left: "$$", right: "$$", display: true},
+                        {left: "$", right: "$", display: false}
+                    ]
+                });
+            }
+        }
+
+        function filterFormulas() {
+            const query = document.getElementById('formulaSearch').value.toLowerCase();
+            const filtered = formulasData.filter(f => 
+                f.title.toLowerCase().includes(query) || f.desc.toLowerCase().includes(query)
+            );
+            renderFormulas(filtered);
+        }
+
+        function filterCategory(cat) {
+            if(cat === 'all') renderFormulas(formulasData);
+            else renderFormulas(formulasData.filter(f => f.category === cat));
+        }
+
+        function copyToClipboard(text) {
+            const tempInput = document.createElement('textarea');
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-5 right-5 bg-brand-600 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-lg z-50 animate-bounce';
+            toast.innerText = 'Đã sao chép công thức!';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        }
+
+        function switchSolver(solverId) {
+            document.querySelectorAll('.solver-view').forEach(v => v.classList.add('hidden'));
+            document.querySelectorAll('.solver-tab-btn').forEach(b => {
+                b.className = 'solver-tab-btn py-2.5 px-4 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 whitespace-nowrap';
+            });
+            document.getElementById(`solver-${solverId}`).classList.remove('hidden');
+            document.getElementById(`subtab-${solverId}`).className = 'solver-tab-btn py-2.5 px-4 font-semibold text-sm border-b-2 border-brand-600 text-brand-600 dark:text-brand-400 whitespace-nowrap';
+            if(solverId === 'graph') drawGraph();
+        }
+
+        function solveLinear() {
+            const a = parseFloat(document.getElementById('eq1A').value);
+            const b = parseFloat(document.getElementById('eq1B').value);
+            const resDiv = document.getElementById('eq1Result');
+            resDiv.classList.remove('hidden');
+
+            if (isNaN(a) || isNaN(b)) {
+                resDiv.innerHTML = '<span class="text-rose-500 font-medium">Vui lòng nhập đầy đủ hệ số.</span>';
+                return;
+            }
+
+            if (a === 0) {
+                if (b === 0) resDiv.innerHTML = '<div class="font-bold text-brand-500">Phương trình có vô số nghiệm.</div>';
+                else resDiv.innerHTML = '<div class="font-bold text-rose-500">Phương trình vô nghiệm.</div>';
+            } else {
+                const x = -b / a;
+                resDiv.innerHTML = `<div class="font-bold text-math-emerald">Nghiệm của phương trình: $x = ${x.toFixed(2)}$</div>`;
+            }
+            if (window.renderMathInElement) renderMathInElement(resDiv);
+        }
+
+        function solveQuadratic() {
+            const a = parseFloat(document.getElementById('coeffA').value);
+            const b = parseFloat(document.getElementById('coeffB').value);
+            const c = parseFloat(document.getElementById('coeffC').value);
+            const resDiv = document.getElementById('quadResult');
+            resDiv.classList.remove('hidden');
+
+            if (isNaN(a) || isNaN(b) || isNaN(c)) {
+                resDiv.innerHTML = '<span class="text-rose-500 font-medium">Vui lòng nhập đầy đủ hệ số.</span>';
+                return;
+            }
+
+            if (a === 0) {
+                resDiv.innerHTML = '<span class="text-amber-500 font-medium">Hệ số a phải khác 0 để là phương trình bậc 2.</span>';
+                return;
+            }
+
+            const delta = b * b - 4 * a * c;
+            let output = `<div class="text-xs font-semibold text-slate-400 mb-1">Delta ($\\Delta = ${delta}$):</div>`;
+
+            if (delta < 0) {
+                output += `<div class="font-bold text-rose-500">Phương trình vô nghiệm.</div>`;
+            } else if (delta === 0) {
+                const x = -b / (2 * a);
+                output += `<div class="font-bold text-brand-500">Phương trình có nghiệm kép: $x_1 = x_2 = ${x.toFixed(2)}$</div>`;
+            } else {
+                const x1 = (-b + Math.sqrt(delta)) / (2 * a);
+                const x2 = (-b - Math.sqrt(delta)) / (2 * a);
+                output += `<div class="font-bold text-math-emerald">Phương trình có 2 nghiệm phân biệt:</div>
+                           <div class="mt-1 font-mono text-sm">x₁ = ${x1.toFixed(2)}, x₂ = ${x2.toFixed(2)}</div>`;
+            }
+
+            resDiv.innerHTML = output;
+            if (window.renderMathInElement) renderMathInElement(resDiv);
+        }
+
+        function calcRect() {
+            const a = parseFloat(document.getElementById('rectA').value);
+            const b = parseFloat(document.getElementById('rectB').value);
+            const c = 2 * (a + b);
+            const s = a * b;
+            document.getElementById('rectRes').innerHTML = `
+                <div>Chu vi C = <strong>${c.toFixed(2)}</strong></div>
+                <div>Diện tích S = <strong>${s.toFixed(2)}</strong></div>
+            `;
+        }
+
+        function calcCircle() {
+            const r = parseFloat(document.getElementById('circleR').value);
+            const c = 2 * Math.PI * r;
+            const s = Math.PI * r * r;
+            document.getElementById('circleRes').innerHTML = `
+                <div>Chu vi C = <strong>${c.toFixed(2)}</strong></div>
+                <div>Diện tích S = <strong>${s.toFixed(2)}</strong></div>
+            `;
+        }
+
+        function calcBox() {
+            const a = parseFloat(document.getElementById('boxA').value);
+            const b = parseFloat(document.getElementById('boxB').value);
+            const h = parseFloat(document.getElementById('boxH').value);
+            const stp = 2 * (a*b + b*h + a*h);
+            const v = a * b * h;
+            document.getElementById('boxRes').innerHTML = `
+                <div>Diện tích toàn phần S = <strong>${stp.toFixed(2)}</strong></div>
+                <div>Thể tích V = <strong>${v.toFixed(2)}</strong></div>
+            `;
+        }
+
+        function calcCylinder() {
+            const r = parseFloat(document.getElementById('cylR').value);
+            const h = parseFloat(document.getElementById('cylH').value);
+            const s = 2 * Math.PI * r * h + 2 * Math.PI * r * r;
+            const v = Math.PI * r * r * h;
+            document.getElementById('cylRes').innerHTML = `
+                <div>Diện tích S = <strong>${s.toFixed(2)}</strong></div>
+                <div>Thể tích V = <strong>${v.toFixed(2)}</strong></div>
+            `;
+        }
+
+        // Canvas Graph Plotter (Chỉ giữ đường thẳng & Parabol THCS)
+        function drawGraph() {
+            const canvas = document.getElementById('graphCanvas');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+
+            const w = canvas.width;
+            const h = canvas.height;
+            const isDark = document.documentElement.classList.contains('dark');
+
+            ctx.clearRect(0, 0, w, h);
+
+            // Grid
+            ctx.strokeStyle = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+            ctx.lineWidth = 1;
+
+            const step = 30;
+            for(let x=0; x<w; x+=step) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke(); }
+            for(let y=0; y<h; y+=step) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
+
+            // Axes
+            ctx.strokeStyle = isDark ? '#94a3b8' : '#64748b';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(0, h/2); ctx.lineTo(w, h/2);
+            ctx.moveTo(w/2, 0); ctx.lineTo(w/2, h);
+            ctx.stroke();
+
+            // Plot preset
+            const type = document.getElementById('graphPreset').value;
+            ctx.strokeStyle = '#3b82f6';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+
+            const scaleX = 30;
+            const scaleY = 30;
+
+            for(let px=0; px<w; px++) {
+                const x = (px - w/2) / scaleX;
+                let y = 0;
+
+                if (type === 'line1') y = x + 1;
+                else if (type === 'line2') y = -2 * x + 3;
+                else if (type === 'quad1') y = x * x;
+                else if (type === 'quad2') y = -x * x + 4;
+
+                const py = h/2 - y * scaleY;
+                if(px === 0) ctx.moveTo(px, py);
+                else ctx.lineTo(px, py);
+            }
+            ctx.stroke();
+        }
+
+        // Mô phỏng Pitago Lab
+        function updatePythagorasLab() {
+            const canvas = document.getElementById('pythagorasCanvas');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const a = parseFloat(document.getElementById('sliderA').value);
+            const b = parseFloat(document.getElementById('sliderB').value);
+
+            const cSquare = a*a + b*b;
+            const cVal = Math.sqrt(cSquare);
+
+            document.getElementById('sideAVal').innerText = `${a} cm`;
+            document.getElementById('sideBVal').innerText = `${b} cm`;
+            document.getElementById('pythSum').innerText = cSquare.toFixed(2);
+            document.getElementById('pythC').innerText = `${cVal.toFixed(2)} cm`;
+
+            const w = canvas.width;
+            const h = canvas.height;
+            const isDark = document.documentElement.classList.contains('dark');
+
+            ctx.clearRect(0, 0, w, h);
+
+            const scale = 20;
+            const startX = 60;
+            const startY = h - 60;
+
+            const lengthA = a * scale;
+            const lengthB = b * scale;
+
+            // Draw Triangle
+            ctx.lineWidth = 3;
+
+            // Cạnh b (đứng)
+            ctx.strokeStyle = '#f43f5e';
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(startX, startY - lengthB);
+            ctx.stroke();
+
+            // Cạnh a (ngang)
+            ctx.strokeStyle = '#3b82f6';
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(startX + lengthA, startY);
+            ctx.stroke();
+
+            // Cạnh c (huyền)
+            ctx.strokeStyle = '#10b981';
+            ctx.beginPath();
+            ctx.moveTo(startX, startY - lengthB);
+            ctx.lineTo(startX + lengthA, startY);
+            ctx.stroke();
+
+            // Ký hiệu góc vuông
+            ctx.strokeStyle = isDark ? '#ffffff' : '#000000';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(startX, startY - 12, 12, 12);
+        }
+
+        function loadQuizQuestion() {
+            const q = quizData[AppState.quizIndex];
+            document.getElementById('quizBadge').innerText = q.level;
+            document.getElementById('quizProgress').innerText = `Câu ${AppState.quizIndex + 1}/${quizData.length}`;
+            document.getElementById('quizQuestion').innerHTML = q.question;
+            
+            const optionsContainer = document.getElementById('quizOptions');
+            optionsContainer.innerHTML = q.options.map((opt, idx) => `
+                <button onclick="checkQuizAnswer(${idx})" class="quiz-opt-btn p-3.5 rounded-xl text-left border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-brand-500 font-medium text-sm transition-all duration-200">
+                    <span class="inline-block w-6 text-slate-400 font-bold">${String.fromCharCode(65 + idx)}.</span> $${opt}$
+                </button>
+            `).join('');
+
+            document.getElementById('quizFeedback').classList.add('hidden');
+            document.getElementById('nextQuizBtn').classList.add('hidden');
+
+            if (window.renderMathInElement) {
+                renderMathInElement(document.getElementById('quizContainer'));
+            }
+        }
+
+        function checkQuizAnswer(idx) {
+            const q = quizData[AppState.quizIndex];
+            const feedback = document.getElementById('quizFeedback');
+            const btns = document.querySelectorAll('.quiz-opt-btn');
+
+            btns.forEach(btn => btn.disabled = true);
+
+            if (idx === q.answer) {
+                btns[idx].classList.add('bg-emerald-500/20', 'border-emerald-500', 'text-emerald-600');
+                feedback.className = 'p-4 rounded-xl mb-4 text-sm font-medium bg-emerald-500/10 text-emerald-600 border border-emerald-500/20';
+                feedback.innerHTML = `<i class="fas fa-check-circle mr-1"></i> <strong>Chính xác!</strong> ${q.explanation}`;
+                AppState.xp += 50;
+                document.getElementById('userXP').innerText = AppState.xp;
+            } else {
+                btns[idx].classList.add('bg-rose-500/20', 'border-rose-500', 'text-rose-600');
+                btns[q.answer].classList.add('bg-emerald-500/20', 'border-emerald-500', 'text-emerald-600');
+                feedback.className = 'p-4 rounded-xl mb-4 text-sm font-medium bg-rose-500/10 text-rose-600 border border-rose-500/20';
+                feedback.innerHTML = `<i class="fas fa-times-circle mr-1"></i> <strong>Chưa đúng!</strong> ${q.explanation}`;
+            }
+
+            feedback.classList.remove('hidden');
+            document.getElementById('nextQuizBtn').classList.remove('hidden');
+            if (window.renderMathInElement) renderMathInElement(feedback);
+        }
+
+        function nextQuestion() {
+            AppState.quizIndex = (AppState.quizIndex + 1) % quizData.length;
+            loadQuizQuestion();
+        }
+    </script>
+</body>
+</html>
